@@ -1,4 +1,9 @@
 function saveOptions () {
+    if (!/(https|http)/.test(document.querySelector('#url').value)) {
+        browser.notifications.create('', { type: "basic", title: "ruTorrent Remote", message: 'URL must start with either "https" or "http"'});
+        return;
+    }
+
     browser.storage.local.set({
         url: document.querySelector('#url').value,
         username: document.querySelector('#username').value,
@@ -14,12 +19,5 @@ function restoreOptions () {
     });
 }
 
-if (!browser.storage.get(function (result) {
-    if (!result.url.test("https|http")) {
-        browser.notifications.create('', { type: "basic", title: "ruTorrent Remote", message: 'URL must start with either "https" or "http"'});
-    }
-    else {
-        document.addEventListener("DOMContentLoaded", restoreOptions);
-        document.querySelector("form").addEventListener("submit", saveOptions);
-    }
-});
+document.addEventListener("DOMContentLoaded", restoreOptions);
+document.querySelector("form").addEventListener("submit", saveOptions);
