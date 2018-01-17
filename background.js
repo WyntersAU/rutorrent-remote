@@ -43,7 +43,12 @@ browser.contextMenus.onClicked.addListener((info, tab) => {
                 
                 r.open('POST', url + '/php/addtorrent.php', true);
                 r.onload = function() {
-                    notify("Successfully uploaded");
+                	if (this.status == 200) {
+                    	notify("Successfully uploaded");
+                	}
+                	else {
+                		notify("Unable to upload torrent (status: " + this.status + ")")
+                	}
                 }
                 r.ontimeout = function(e) {
                     notify("Timed out trying to upload")
