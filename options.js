@@ -1,5 +1,5 @@
 function saveOptions () {
-    chrome.storage.local.set({
+    browser.storage.local.set({
         url: document.querySelector('#url').value,
         username: document.querySelector('#username').value,
         password: document.querySelector('#password').value,
@@ -7,17 +7,19 @@ function saveOptions () {
 }
 
 function restoreOptions () {
-    chrome.storage.local.get(function (result) {
+    browser.storage.local.get(function (result) {
         document.querySelector('#url').value = result.url || '';
         document.querySelector('#username').value = result.username || '';
         document.querySelector('#password').value = result.password || '';
     });
 }
 
-if (!browser.storage.get("url").test("https|http")) {
-    browser.notifications.create('', { type: "basic", title: "ruTorrent Remote", message: 'URL must start with either "https" or "http"'});
-}
-else {
-    document.addEventListener("DOMContentLoaded", restoreOptions);
-    document.querySelector("form").addEventListener("submit", saveOptions);
-}
+if (!browser.storage.get(function (result) {
+    if (!result.url.test("https|http")) {
+        browser.notifications.create('', { type: "basic", title: "ruTorrent Remote", message: 'URL must start with either "https" or "http"'});
+    }
+    else {
+        document.addEventListener("DOMContentLoaded", restoreOptions);
+        document.querySelector("form").addEventListener("submit", saveOptions);
+    }
+});
