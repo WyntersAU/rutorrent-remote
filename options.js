@@ -1,6 +1,6 @@
 function saveOptions () {
     chrome.storage.local.set({
-        url: document.querySelector('#url').value.replace(/(https|http)\:\/\//i, ""),
+        url: document.querySelector('#url').value,
         username: document.querySelector('#username').value,
         password: document.querySelector('#password').value,
     });
@@ -14,5 +14,10 @@ function restoreOptions () {
     });
 }
 
-document.addEventListener("DOMContentLoaded", restoreOptions);
-document.querySelector("form").addEventListener("submit", saveOptions);
+if (!browser.storage.get("url").test("https|http")) {
+    browser.notifications.create('', { type: "basic", title: "ruTorrent Remote", message: 'URL must start with either "https" or "http"'});
+}
+else {
+    document.addEventListener("DOMContentLoaded", restoreOptions);
+    document.querySelector("form").addEventListener("submit", saveOptions);
+}
