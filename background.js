@@ -34,8 +34,14 @@ browser.contextMenus.onClicked.addListener((info, tab) => {
 
                 var r = new XMLHttpRequest();
                 r.timeout = 5000;
-
-                r.open('POST', 'https://' + options.username +':' + options.password +'@' + options.url + '/php/addtorrent.php', true);
+                
+                var url = 'https://';
+                var htmlAuth = options.username + ':' + options.password + '@';
+                if (options.username.length > 0)
+                    url += htmlAuth;
+                url += options.url;
+                
+                r.open('POST', url + '/php/addtorrent.php', true);
                 r.onload = function() {
                     notify("Successfully uploaded");
                 }
