@@ -35,11 +35,10 @@ browser.contextMenus.onClicked.addListener((info, tab) => {
                 var r = new XMLHttpRequest();
                 r.timeout = 5000;
                 
-                var url = 'https://';
-                var htmlAuth = options.username + ':' + options.password + '@';
+                var url = '';
+                var auth = options.username + ':' + options.password + '@';
                 if (options.username.length > 0)
-                    url += htmlAuth;
-                url += options.url;
+                	url = (options.url.replace(":\/\/", "://" + auth));
                 
                 r.open('POST', url + '/php/addtorrent.php', true);
                 r.onload = function() {
@@ -47,7 +46,7 @@ browser.contextMenus.onClicked.addListener((info, tab) => {
                     	notify("Successfully uploaded");
                 	}
                 	else {
-                		notify("Unable to upload torrent (status: " + this.status + ")")
+                		notify("Unable to upload torrent (status " + this.status + ")")
                 	}
                 }
                 r.ontimeout = function(e) {
