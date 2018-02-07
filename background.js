@@ -42,47 +42,44 @@ function getTorrentFile(info, tab) {
     return promise;
 }
 function uploadToRutorrent(response) {
-    var option = {};
-    browser.storage.local.get(function (options) {
-        option = options;
-    });
-
-    var promise = new Promise((resolve, reject) => {
-        if (option.url == null) {
-            reject(new Error("Goto Add-ons -> ruTorrent Remote -> Options and set the options."));
-            return;
-        }
-
-        var formData = new FormData();
-        formData.append('torrent_file', response, (Math.random() * response.size).toString() + ".torrent");
-
-        var r = new XMLHttpRequest();
-        r.timeout = 5000;
-        
-        var url = '';
-        var auth = option.username + ':' + option.password + '@';
-        if (option.username.length > 0)
-            url = (option.url.replace(":\/\/", "://" + auth));
-        r.open('POST', url + '/php/addtorrent.php', true);
-        r.onload = function() {
-            if (this.status == 200) {
-                resolve("Uploaded");
+    return browser.storage.local.get()
+        .then((options) => {
+            var promise = new Promise((resolve, reject) => {
+            if (options.url == null) {
+                reject(new Error("Goto Add-ons -> ruTorrent Remote -> Options and set the options."));
+                return;
             }
-            else {
-                reject(new Error("Failed to upload: " + this.status));
+
+            var formData = new FormData();
+            formData.append('torrent_file', response, (Math.random() * response.size).toString() + ".torrent");
+
+            var r = new XMLHttpRequest();
+            r.timeout = 5000;
+            
+            var url = '';
+            var auth = options.username + ':' + options.password + '@';
+            if (options.username.length > 0)
+                url = (options.url.replace(":\/\/", "://" + auth));
+            r.open('POST', url + '/php/addtorrent.php', true);
+            r.onload = function() {
+                if (this.status == 200) {
+                    resolve("Uploaded");
+                }
+                else {
+                    reject(new Error("Failed to upload: " + this.status));
+                }
             }
-        }
-        r.ontimeout = function(e) {
-            reject(new Error("Timed out"));
-        }
-        r.send(formData);
+            r.ontimeout = function(e) {
+                reject(new Error("Timed out"));
+            }
+            r.send(formData);
+        });
+        return promise;
     });
-    return promise;
 }
 
 browser.contextMenus.onClicked.addListener((info, tab) => {
     if (info.menuItemId === "upload-to-rutorrent") {
-        notify('fuc');
         getTorrentFile(info, tab)
             .then(function(response) {
                 uploadToRutorrent(response)

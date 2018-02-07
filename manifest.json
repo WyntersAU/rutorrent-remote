@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "ruTorrent Remote",
     "description": "Adds a context menu for uploading a torrent to ruTorrent",
-    "version": "1.0",
+    "version": "1.5",
 
     "background": {
         "scripts": [
