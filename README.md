@@ -1,4 +1,5 @@
 # ruTorrent Remote!
+Manage your torrents fast-and-easy without the hassle of keeping a tab open just to check on them!
 
 # Installation
 todo..
