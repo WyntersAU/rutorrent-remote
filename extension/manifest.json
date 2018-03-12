@@ -1,0 +1,24 @@
+{
+  "manifest_version": 2,
+  "name": "ruTorrent Remote",
+  "version": "1.0",
+
+  "browser_action": {
+    "browser_style": true,
+    "default_icon": {
+      "32": "images/rtorrent-32.png",
+      "96": "images/rtorrent-96.png"
+    },
+    "default_title": "ruTorrent Remote",
+    "default_popup": "remote.html"
+  },
+
+
+    "permissions": [
+        "<all_urls>",
+        "activeTab",
+        "contextMenus",
+        "notifications",
+        "storage"
+    ]
+}
