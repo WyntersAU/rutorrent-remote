@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "ruTorrent Remote",
-  "version": "1.0",
+  "version": "2.0",
 
   "browser_action": {
     "browser_style": true,
@@ -12,13 +12,15 @@
     "default_title": "ruTorrent Remote",
     "default_popup": "remote.html"
   },
+  "options_ui": {
+    "page": "options.html"
+  },
 
-
-    "permissions": [
-        "<all_urls>",
-        "activeTab",
-        "contextMenus",
-        "notifications",
-        "storage"
-    ]
+  "permissions": [
+      "<all_urls>",
+      "activeTab",
+      "contextMenus",
+      "notifications",
+      "storage"
+  ]
 }

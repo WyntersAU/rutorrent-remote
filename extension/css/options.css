@@ -1,0 +1,9 @@
+input {
+	display: inline;
+	margin-left: 50px;
+}
+
+button {
+	width: 80px;
+	text-align: center;
+}

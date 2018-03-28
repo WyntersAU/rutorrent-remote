@@ -3,7 +3,20 @@ import ReactDOM from 'react-dom'
 import ReactTable from 'react-table'
 import axios from 'axios'
 import { ContextMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu";
-import { showMenu } from 'react-contextmenu/modules/actions'
+
+var utilities = require("utilities.js");
+var columns = [
+    { Header: "Name", accessor: "name", width: 320 },
+    { Header: "Status", accessor: "status", width: 57 },
+    { Header: "Size", accessor: "size", width: 68 },
+    { Header: "Done", accessor: "done", width: 46 },
+    { Header: "Downloaded", accessor: "downloaded", width: 79 },
+    { Header: "Uploaded", accessor: "uploaded", width: 68 },
+    { Header: "Ratio", accessor: "ratio", width: 40 },
+    { Header: "UL", accessor: "ul", width: 70 },
+    { Header: "DL", accessor: "dl", width: 70 },
+    { Header: "Added", accessor: "added", width: 69 }
+  ];
 
 class Popup extends Component {
   constructor(props) {
@@ -12,79 +25,20 @@ class Popup extends Component {
       data: [],
     };
 
-    this.addItemToTable = this.addItemToTable.bind(this);
     this.getTorrents = this.getTorrents.bind(this);
-
     this.handleOnResizeChange = this.handleOnResizeChange.bind(this);
-    this.handleResized = this.handleResized.bind(this);
-
-    this.getColumns = this.getColumns.bind(this);
-    this.formatBytes = this.formatBytes.bind(this);
-
-    this.getRowRenderer = this.getRowRenderer.bind(this);
-    this.handleCellClick = this.handleCellClick.bind(this);    
 
     this.getTorrents();
   }
 
-  //https://stackoverflow.com/a/18650828
-  formatBytes(bytes,decimals) {
-  	if(bytes == 0) return '0 B';
-  	var k = 1024,
-  	    dm = decimals || 2,
-  	    sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
-  	    i = Math.floor(Math.log(bytes) / Math.log(k));
-  	return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
-  }
-  formatSpeed(bytes,decimals) {
-    if(bytes == 0) return '0 B/s';
-    var k = 1024,
-        dm = decimals || 2,
-        sizes = ['B/s', 'KB/s', 'MB/s', 'GB/s', 'TB/s', 'PB/s', 'EB/s', 'ZB/s', 'YB/s'],
-        i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
-  }
-
-  handleCellClick(click) {
-    
-  }
-
-  getRowRenderer(row) {
-    return (
-      <ContextMenuTrigger id={row.value}>
-        <span>{row.value}</span>
-
-        <ContextMenu id={row.value}>
-          <MenuItem onClick={this.handleCellClick}> 
-            Start
-          </MenuItem>
-        </ContextMenu>
-
-      </ContextMenuTrigger>
-    );
-  }
-
-
-  getColumns() {
-  	var columns = [
-      	{ Header: "Name", accessor: "name", width: 280},
-      	{ Header: "Status", accessor: "status", width: 58 },
-      	{ Header: "Size", accessor: "size", width: 70 },
-      	{ Header: "Done", accessor: "done", width: 40 },
-      	{ Header: "Downloaded", accessor: "downloaded", width: 80 },
-      	{ Header: "Uploaded", accessor: "uploaded", width: 73 },
-      	{ Header: "Ratio", accessor: "ratio", width: 40 },
-      	{ Header: "UL", accessor: "ul", width: 70 },
-      	{ Header: "DL", accessor: "dl", width: 70 }
-      ];
-
-    return columns;
-  }
 
   async getTorrents() {
-  	var params = new URLSearchParams();
+  	var params = new URLSearchParams() 
   	params.append('mode', 'list'); 
-  	var torrents = (await axios.post('<REDACTED>', params)).data;
+    params.append('cmd', 'd.custom=seedingtime');
+    var url = (await browser.storage.local.get('url')).url.replace(/(https?:\/\/)/, '$1' + (await browser.storage.local.get('username')).username + ':' + (await browser.storage.local.get('password')).password + '@');
+
+  	var torrents = (await axios.post(url + '/plugins/httprpc/action.php', params)).data;
 	  var data = [];
 
   	for (var hash in torrents.t) {
@@ -97,47 +51,44 @@ class Popup extends Component {
   		var ratio = info[10];
   		var ul = info[11];
   		var dl = info[12];
-
+      var added = info[34];
 
   		var torrent = {
   			name: name,
   			status: "Seeding", 
-  			size: this.formatBytes(size),
+  			size: utilities.ToBytes(size),
   			//size_b: size,
   			done: +(downloaded / size * 100).toFixed(2) + "%",
-  			downloaded: this.formatBytes(+downloaded),
+  			downloaded: utilities.ToBytes(+downloaded),
   			//downloaded_b: downloaded,
-  			uploaded: this.formatBytes(+uploaded),
+  			uploaded: utilities.ToBytes(+uploaded),
   			//uploaded_b: uploaded,
   			ratio: +(ratio / 1000).toFixed(3),
-  			ul: this.formatSpeed(+ul),
-  			dl: this.formatSpeed(+dl)
+  			ul: utilities.ToSpeed(+ul),
+  			dl: utilities.ToSpeed(+dl),
+        added: added
   		};
   		data.push(torrent);
     }
   	this.setState({
   		data: data
   	});
+
   }
 
-  addItemToTable(item) {
-    this.setState(ps => ({
-      data: [...ps.data, item]
-    }));
-  }
   handleResized() {
   	var state = JSON.parse(localStorage.getItem('table'));
   	
   	if (!state) {
   		state = [];
-  		this.getColumns().forEach((column) => {
+  		columns.forEach((column) => {
   			state.push({
   				id: column.accessor,
   				value: column.width
   			});
   		});
   	}
-
+    console.log(state);
   	return state;
   }
   handleOnResizeChange(state) {
@@ -148,37 +99,35 @@ class Popup extends Component {
   render() {
     return (
       <div>
-        <ReactTable
-        		  noDataText="Fetching information from ruTorrent"
-              getTdProps= {(state, rowInfo, column, instance) => {
-                return {
-                  onContextMenu: (e) => {
-                    e.preventDefault();
-                    //console.log(e);
-                   // console.log(rowInfo);
-                    showMenu({
-                      position: {x:e.pageX, y:e.pageY},
-                      target: e.target,
-                      id: 'start-stop-delete'
-                    });
-                  }
-                }
-              }}
-              data={this.state.data}
-              columns={this.getColumns()}
-              pageSize={this.state.data.length || 3}
-              showPagination={false}
+        <ContextMenuTrigger id="start-stop-delete" holdToDisplay="1000">
+	        <ReactTable
+	        	  noDataText="Fetching information from ruTorrent"
 
-              onResizedChange={this.handleOnResizeChange}
-              resized={this.handleResized()}
-              style={{
-                  height: 'auto',
-              }}
-              className="-highlight"
-        />
+	              data={this.state.data}
+	              columns={columns}
+	              pageSize={this.state.data.length || 3}
+	              showPagination={false}
+                defaultSorted={[
+                  {
+                    id: "added",
+                    desc: true
+                  }
+                ]}
+	              onResizedChange={this.handleOnResizeChange}
+	              resized={this.handleResized()}
+	              style={{
+	                  height: 'auto',
+	              }}
+	              className="-highlight"
+	        />
+	    </ContextMenuTrigger>
+
         <ContextMenu id='start-stop-delete'>
           <MenuItem onClick={this.handleCellClick}> 
             Start
+          </MenuItem>
+          <MenuItem>
+          	Stop
           </MenuItem>
         </ContextMenu>
       </div>
