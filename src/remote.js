@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom'
 import ReactTable from 'react-table'
 import axios from 'axios'
 import { ContextMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu";
+import { showMenu } from 'react-contextmenu/modules/actions'
+
 
 var utilities = require("utilities.js");
 var columns = [
@@ -15,7 +17,8 @@ var columns = [
     { Header: "Ratio", accessor: "ratio", width: 40 },
     { Header: "UL", accessor: "ul", width: 70 },
     { Header: "DL", accessor: "dl", width: 70 },
-    { Header: "Added", accessor: "added", width: 69 }
+    { Header: "Added", accessor: "added", width: 69, show: false },
+    { Header: "Hash", accessor: "hash", width: 0, show: false }
   ];
 
 class Popup extends Component {
@@ -23,12 +26,31 @@ class Popup extends Component {
     super(props);
     this.state = {
       data: [],
+      noDataText: 'Fetching information from ruTorrent',
+      contextMenuData: [],
+      cid: 0
     };
 
     this.getTorrents = this.getTorrents.bind(this);
     this.handleOnResizeChange = this.handleOnResizeChange.bind(this);
+    this.handleStartClick = this.handleStartClick.bind(this);
+    this.resetColumnSizing = this.resetColumnSizing.bind(this);
 
-    this.getTorrents();
+    setInterval(this.getTorrents, 1000);
+  }
+
+  resetColumnSizing() {
+    localStorage.setItem('table', JSON.stringify(columns));
+    this.forceUpdate();
+  }
+
+
+  async handleStartClick(e, data) {
+    var params = new URLSearchParams();
+    params.append('mode', 'stop');
+    params.append('hash', this.state.contextMenuData.hash);
+    var url = (await browser.storage.local.get('url')).url.replace(/(https?:\/\/)/, '$1' + (await browser.storage.local.get('username')).username + ':' + (await browser.storage.local.get('password')).password + '@');
+    var responmse = (await axios.post(url + '/plugins/httprpc/action.php', params));
   }
 
 
@@ -39,6 +61,12 @@ class Popup extends Component {
     var url = (await browser.storage.local.get('url')).url.replace(/(https?:\/\/)/, '$1' + (await browser.storage.local.get('username')).username + ':' + (await browser.storage.local.get('password')).password + '@');
 
   	var torrents = (await axios.post(url + '/plugins/httprpc/action.php', params)).data;
+    if (torrents.cid != this.state.cid) {
+      console.log('ye mate she be ready to update');
+      this.setState({
+        cid: torrents.cid
+      });
+    }
 	  var data = [];
 
   	for (var hash in torrents.t) {
@@ -66,7 +94,8 @@ class Popup extends Component {
   			ratio: +(ratio / 1000).toFixed(3),
   			ul: utilities.ToSpeed(+ul),
   			dl: utilities.ToSpeed(+dl),
-        added: added
+        added: added,
+        hash: hash
   		};
   		data.push(torrent);
     }
@@ -76,10 +105,10 @@ class Popup extends Component {
 
   }
 
-  handleResized() {
+  handleResized(e, data) {
   	var state = JSON.parse(localStorage.getItem('table'));
   	
-  	if (!state) {
+  	if (!state || data.reset) {
   		state = [];
   		columns.forEach((column) => {
   			state.push({
@@ -88,7 +117,6 @@ class Popup extends Component {
   			});
   		});
   	}
-    console.log(state);
   	return state;
   }
   handleOnResizeChange(state) {
@@ -99,36 +127,49 @@ class Popup extends Component {
   render() {
     return (
       <div>
-        <ContextMenuTrigger id="start-stop-delete" holdToDisplay="1000">
-	        <ReactTable
-	        	  noDataText="Fetching information from ruTorrent"
+        <ReactTable
+        	  noDataText={this.state.noDataText}
+            getTdProps={(state, rowInfo, column, instance) => {
+              return {
+                onContextMenu: (e) => {
+                  e.preventDefault();
 
-	              data={this.state.data}
-	              columns={columns}
-	              pageSize={this.state.data.length || 3}
-	              showPagination={false}
-                defaultSorted={[
-                  {
-                    id: "added",
-                    desc: true
-                  }
-                ]}
-	              onResizedChange={this.handleOnResizeChange}
-	              resized={this.handleResized()}
-	              style={{
-	                  height: 'auto',
-	              }}
-	              className="-highlight"
-	        />
-	    </ContextMenuTrigger>
+                  this.setState({
+                    'contextMenuData': rowInfo.original
+                  });
+
+                  showMenu({
+                    position: {x:e.pageX, y:e.pageY},
+                    target: e.target,
+                    id: 'start-stop-delete',
+                  });
+                }
+              }
+            }}
+            data={this.state.data}
+            columns={columns}
+            pageSize={this.state.data.length || 3}
+            showPagination={false}
+            defaultSorted={[{
+                id: "added",
+                desc: true
+              }
+            ]}
+            onResizedChange={this.handleOnResizeChange}
+            resized={this.handleResized(null, {reset: false})}
+            style={{
+                height: 'auto',
+            }}
+            className="-highlight"
+        />
 
         <ContextMenu id='start-stop-delete'>
-          <MenuItem onClick={this.handleCellClick}> 
-            Start
-          </MenuItem>
-          <MenuItem>
-          	Stop
-          </MenuItem>
+            <MenuItem onClick={this.handleStartClick}> 
+              Start
+            </MenuItem>
+            <MenuItem onClick={this.resetColumnSizing} > 
+              Reset Column Sizing
+            </MenuItem>
         </ContextMenu>
       </div>
     );

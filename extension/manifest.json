@@ -12,6 +12,11 @@
     "default_title": "ruTorrent Remote",
     "default_popup": "remote.html"
   },
+  "background": {
+    "scripts": [
+      "src/background.js"
+    ]
+  },
   "options_ui": {
     "page": "options.html"
   },
