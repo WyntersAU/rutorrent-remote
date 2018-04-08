@@ -3,7 +3,6 @@ const webpack = require('webpack');
 
 module.exports = {
   entry: {
-    background: './src/background.js',
     remote: './src/remote.js',
     utilities: './src/utilities.js',
     options: './src/options.js'

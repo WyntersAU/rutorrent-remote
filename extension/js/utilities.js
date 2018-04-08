@@ -60,12 +60,12 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 19);
+/******/ 	return __webpack_require__(__webpack_require__.s = 57);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 19:
+/***/ 57:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -76,6 +76,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.ToBytes = ToBytes;
 exports.ToSpeed = ToSpeed;
+//TODO: Deprecate utilities.js
+
 //https://stackoverflow.com/a/18650828
 function ToBytes(bytes, decimals) {
   if (bytes == 0) return '0 B';

@@ -1,3 +1,5 @@
+//TODO: Deprecate utilities.js
+
 //https://stackoverflow.com/a/18650828
 export function ToBytes(bytes, decimals) {
 	if(bytes == 0) return '0 B';
