@@ -7,13 +7,19 @@ export class Torrent {
 	}
 
 	start() {
-		
+		this.rutorrent.sendRPCRequest({
+			mode: 'start',
+			hash: this.hash
+		});
 	}
 	pause() { //Deprecate?
 
 	}
 	stop() {
-
+		this.rutorrent.sendRPCRequest({
+			mode: 'stop',
+			hash: this.hash
+		})
 	}
 	recheck() {
 
@@ -25,8 +31,11 @@ export class Torrent {
 	getState() {
 
 	}
-	getfiles() {
-
+	getFiles() {
+		this.rutorrent.sendRPCRequest({
+			mode: 'fls',
+			hash: this.hash
+		})
 	}
 
 	setPriority(priority) {

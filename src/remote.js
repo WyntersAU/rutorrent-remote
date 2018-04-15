@@ -5,7 +5,7 @@ import {ruTorrent} from 'rutorrent'
 
 class Remote extends Component {
   async render() {
-    var rutorrent = new ruTorrent('REDACTED', 'REDACTED', 'REDACTED');
+    var rutorrent = new ruTorrent();
   }
 } 
 
