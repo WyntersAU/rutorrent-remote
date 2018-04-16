@@ -7,7 +7,7 @@
     -webkit-box-direction: normal;
     -ms-flex-direction: column;
     flex-direction: column;
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    border: 1px solid #23272A;
 }
 
 .ReactTable * {
@@ -30,7 +30,9 @@
     align-items: stretch;
     width: 100%;
     border-collapse: collapse;
-    overflow: auto
+    overflow: auto;
+    color: #B4B4B4;
+    background-color: #2C2F33;
 }
 
 .ReactTable .rt-thead {
@@ -48,6 +50,7 @@
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+    font-weight: bold;
 }
 
 .ReactTable .rt-thead.-headerGroups {
@@ -419,12 +422,12 @@
     top: 50%;
     -webkit-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
-    background: rgba(255, 255, 255, 0.8);
+    background: rgba(35, 39, 42, 0.8);
     transition: all .3s ease;
     z-index: 1;
     pointer-events: none;
     padding: 20px;
-    color: rgba(0, 0, 0, 0.5)
+    color: rgba(180, 180, 180, 0.5)
 }
 
 .ReactTable .-loading {
