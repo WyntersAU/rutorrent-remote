@@ -1,12 +1,96 @@
 import axios from 'axios'
 import qs from 'qs'
-import {Torrent} from 'torrent'
+import {ToBytes, ToSpeed} from 'utilities.js'
+
+export class Torrent {
+	constructor(hash, rutorrent) {
+		this.hash = hash;
+		this.rutorrent = rutorrent;
+	}
+
+	start() {
+		this.rutorrent.sendRPCRequest({
+			mode: 'start',
+			hash: this.hash
+		});
+	}
+
+	stop() {
+		this.rutorrent.sendRPCRequest({
+			mode: 'stop',
+			hash: this.hash
+		})
+	}
+	recheck() {
+
+	}
+	delete() {
+
+	}
+
+	getState() {
+
+	}
+	getFiles() {
+		this.rutorrent.sendRPCRequest({
+			mode: 'fls',
+			hash: this.hash
+		})
+	}
+
+	getName = () => {
+		return this.name || '?';
+	}
+	getStatus = () => {
+		return this.status || '?';
+	}
+	getSize = () => {
+		return ToBytes(this.size) || '?';
+	}
+	getDone = () => {
+		return +(this.downloaded / this.size * 100).toFixed(2) + '%' || '?';
+	}
+	getDownloaded = () => {
+		return ToBytes(+this.downloaded) || '?';
+	}
+	getUploaded = () => {
+		return ToBytes(+this.uploaded) || '?';
+	}
+	getRatio = () => {
+		return +(this.ratio / 1000).toFixed(3) || 0;
+	}
+	getDl = () => {
+		return ToSpeed(+this.dl) || '?';
+	}
+	getUl = () => {
+		return ToSpeed(+this.ul) || '?';
+	}
+	getArray = () => {
+		return [
+			this.getName(),
+			this.getStatus(),
+			this.getSize(),
+			this.getDone(),
+			this.getDownloaded(),
+			this.getUploaded(),
+			this.getRatio(),
+			this.getDl(),
+			this.getUl()
+		];
+	}
+
+
+	setPriority(priority) {
+
+	}
+};
 
 export class ruTorrent {
 	constructor(url, username, password) {
 		this.url = url;
 		this.auth = { username: username, password: password };
 		this.cid = 0;
+		this.torrents = new Array();
 
 		//TODO: Create error-notification.
 		if (!this.exists())
@@ -25,7 +109,6 @@ export class ruTorrent {
 	/*Returns a dictionary-object of torrent-hashes with their respective data in each object*/
 	async getTorrents() {
 		var list_torrents = (await this.sendRPCRequest({ 'mode': 'list', 'cmd': 'd.custom=seedingtime' }));
-
 		if (this.cid == list_torrents.cid)
 			return this.torrents;
 
@@ -34,16 +117,19 @@ export class ruTorrent {
 			var torrent = new Torrent(hash, this);
 			
 			torrent.name = info[4];
-	  		var size = info[5];
-	  		var downloaded = info[8];
-	  		var uploaded = info[9];
-	  		var ratio = info[10];
-	  		var ul = info[11];
-	  		var dl = info[12];
-			var added = info[34];
+	  		torrent.size = info[5];
+	  		torrent.downloaded = info[8];
+	  		torrent.uploaded = info[9];
+	  		torrent.ratio = info[10];
+	  		torrent.ul = info[11];
+	  		torrent.dl = info[12];
+			torrent.added = info[34];
 
-
+			this.torrents.push(torrent);
 		}
+
+		this.cid = list_torrents.cid;
+		return this.torrents;
 	}
 
 	/*Any RPC-related *connections* are done through _sendRPCRequest_*/
@@ -78,3 +164,4 @@ export class ruTorrent {
 		return options;
 	}
 }
+

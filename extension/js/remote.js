@@ -2063,7 +2063,7 @@ module.exports = {
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-
+/* WEBPACK VAR INJECTION */(function(console) {
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -2086,13 +2086,16 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 class Remote extends _react.Component {
   render() {
     return _asyncToGenerator(function* () {
-      var rutorrent = new _rutorrent.ruTorrent('REDACTED', 'REDACTED', 'REDACTED');
+      var rutorrent = new _rutorrent.ruTorrent('https://akers.me/rutorrent', 'james', 'jamesisgay');
+      var torrents = yield rutorrent.getTorrents();
+      console.log(torrents[1].getArray());
     })();
   }
 }
 
 _reactDom2.default.render(_react2.default.createElement(Remote, null), document.getElementById('app'));
 exports.default = Remote;
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
 /* 18 */
@@ -3325,7 +3328,7 @@ module.exports = focusNode;
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.ruTorrent = undefined;
+exports.ruTorrent = exports.Torrent = undefined;
 
 var _axios = __webpack_require__(34);
 
@@ -3335,23 +3338,98 @@ var _qs = __webpack_require__(53);
 
 var _qs2 = _interopRequireDefault(_qs);
 
-var _torrent = __webpack_require__(56);
+var _utilities = __webpack_require__(57);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
+class Torrent {
+	constructor(hash, rutorrent) {
+		this.getName = () => {
+			return this.name || '?';
+		};
+
+		this.getStatus = () => {
+			return this.status || '?';
+		};
+
+		this.getSize = () => {
+			return (0, _utilities.ToBytes)(this.size) || '?';
+		};
+
+		this.getDone = () => {
+			return +(this.downloaded / this.size * 100).toFixed(2) + '%' || '?';
+		};
+
+		this.getDownloaded = () => {
+			return (0, _utilities.ToBytes)(+this.downloaded) || '?';
+		};
+
+		this.getUploaded = () => {
+			return (0, _utilities.ToBytes)(+this.uploaded) || '?';
+		};
+
+		this.getRatio = () => {
+			return +(this.ratio / 1000).toFixed(3) || 0;
+		};
+
+		this.getDl = () => {
+			return (0, _utilities.ToSpeed)(+this.dl) || '?';
+		};
+
+		this.getUl = () => {
+			return (0, _utilities.ToSpeed)(+this.ul) || '?';
+		};
+
+		this.getArray = () => {
+			return [this.getName(), this.getStatus(), this.getSize(), this.getDone(), this.getDownloaded(), this.getUploaded(), this.getRatio(), this.getDl(), this.getUl()];
+		};
+
+		this.hash = hash;
+		this.rutorrent = rutorrent;
+	}
+
+	start() {
+		this.rutorrent.sendRPCRequest({
+			mode: 'start',
+			hash: this.hash
+		});
+	}
+
+	stop() {
+		this.rutorrent.sendRPCRequest({
+			mode: 'stop',
+			hash: this.hash
+		});
+	}
+	recheck() {}
+	delete() {}
+
+	getState() {}
+	getFiles() {
+		this.rutorrent.sendRPCRequest({
+			mode: 'fls',
+			hash: this.hash
+		});
+	}
+
+	setPriority(priority) {}
+}exports.Torrent = Torrent;
+;
+
 class ruTorrent {
 	constructor(url, username, password) {
 		this.url = url;
 		this.auth = { username: username, password: password };
+		this.cid = 0;
+		this.torrents = new Array();
 
 		//TODO: Create error-notification.
 		if (!this.exists()) throw new Error('ruTorrent does not exist at ' + url);
 	}
-	/*
- 	Returns *true* or *false* whether ruTorrent exists at _this.url_
- */
+
+	/*Returns *true* or *false* whether ruTorrent exists at _this.url_*/
 	exists() {
 		var _this = this;
 
@@ -3362,19 +3440,37 @@ class ruTorrent {
 			return true;
 		})();
 	}
-	//TODO: Create 'httpRPCExists'
 
+	/*Returns a dictionary-object of torrent-hashes with their respective data in each object*/
 	getTorrents() {
 		var _this2 = this;
 
 		return _asyncToGenerator(function* () {
-			return yield _this2.sendRPCRequest({ 'mode': 'list' });
+			var list_torrents = yield _this2.sendRPCRequest({ 'mode': 'list', 'cmd': 'd.custom=seedingtime' });
+			if (_this2.cid == list_torrents.cid) return _this2.torrents;
+
+			for (var hash in list_torrents.t) {
+				var info = list_torrents.t[hash];
+				var torrent = new Torrent(hash, _this2);
+
+				torrent.name = info[4];
+				torrent.size = info[5];
+				torrent.downloaded = info[8];
+				torrent.uploaded = info[9];
+				torrent.ratio = info[10];
+				torrent.ul = info[11];
+				torrent.dl = info[12];
+				torrent.added = info[34];
+
+				_this2.torrents.push(torrent);
+			}
+
+			_this2.cid = list_torrents.cid;
+			return _this2.torrents;
 		})();
 	}
 
-	/*
- 	Any RPC-related *connections* are done through _sendRPCRequest_
- */
+	/*Any RPC-related *connections* are done through _sendRPCRequest_*/
 	sendRPCRequest(parameters) {
 		var _this3 = this;
 
@@ -3385,9 +3481,7 @@ class ruTorrent {
 		})();
 	}
 
-	/*
- 	Ensure *all* connections through _axios_ are done through _GetRequestOptions_
- */
+	/*Ensure *all* connections through _axios_ are done through _GetRequestOptions_*/
 	static GetRequestOptions(url, username, password, method) {
 		var options = {
 			'url': url,
@@ -4717,37 +4811,38 @@ module.exports = function (str, opts) {
 
 
 /***/ }),
-/* 56 */
+/* 56 */,
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 Object.defineProperty(exports, "__esModule", {
-	value: true
+  value: true
 });
-//TODO: Fill-out _Torrent_
+exports.ToBytes = ToBytes;
+exports.ToSpeed = ToSpeed;
+//TODO: Deprecate utilities.js
 
-class Torrent {
-	constructor(hash, rutorrent) {
-		this.hash = hash;
-		this.rutorrent = rutorrent;
-	}
-
-	start() {}
-	pause() {//Deprecate?
-
-	}
-	stop() {}
-	recheck() {}
-	delete() {}
-
-	getState() {}
-	getfiles() {}
-
-	setPriority(priority) {}
+//https://stackoverflow.com/a/18650828
+function ToBytes(bytes, decimals) {
+  if (bytes == 0) return '0 B';
+  var k = 1024,
+      dm = decimals || 2,
+      sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
+      i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
-exports.Torrent = Torrent;
+
+function ToSpeed(bytes, decimals) {
+  if (bytes == 0) return '0 B/s';
+  var k = 1024,
+      dm = decimals || 2,
+      speeds = ['B/s', 'KB/s', 'MB/s', 'GB/s', 'TB/s', 'PB/s', 'EB/s', 'ZB/s', 'YB/s'],
+      i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + speeds[i];
+}
 
 /***/ })
 /******/ ]);
