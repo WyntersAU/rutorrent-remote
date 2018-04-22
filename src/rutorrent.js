@@ -29,7 +29,7 @@ export class Torrent {
 	}
 
 	getState() {
-
+		return this.state || 0;
 	}
 	getFiles() {
 		this.rutorrent.sendRPCRequest({
@@ -115,7 +115,9 @@ export class ruTorrent {
 		for (var hash in list_torrents.t) {
 			var info = list_torrents.t[hash];
 			var torrent = new Torrent(hash, this);
-			
+
+			torrent.info = info;
+
 			torrent.name = info[4];
 	  		torrent.size = info[5];
 	  		torrent.downloaded = info[8];
@@ -124,6 +126,22 @@ export class ruTorrent {
 	  		torrent.ul = info[11];
 	  		torrent.dl = info[12];
 			torrent.added = info[34];
+
+			if (info[1] != 0) {	
+				torrent.status = 'Started';
+				if ((info[4] == 0) || (info[29] == 0)) {
+					torrent.status = 'Paused';
+				}
+			}
+			if (info[24] != 0) {
+				torrent.status = 'Hashing';
+			}
+			if (info[2] != 0) {
+				torrent.status = 'Error';
+			}
+			if (+(torrent.downloaded / torrent.size * 100) == 100) {
+				torrent.status = 'Seeding';
+			}
 
 			this.torrents.push(torrent);
 		}
