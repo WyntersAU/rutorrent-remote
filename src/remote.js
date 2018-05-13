@@ -6,16 +6,16 @@ import { ContextMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu";
 
 var utilities = require("utilities.js");
 var columns = [
-    { Header: "Name", accessor: "name", width: 320 },
+    { Header: "Name", accessor: "name", width: 280 },
     { Header: "Status", accessor: "status", width: 57 },
     { Header: "Size", accessor: "size", width: 68 },
     { Header: "Done", accessor: "done", width: 46 },
     { Header: "Downloaded", accessor: "downloaded", width: 79 },
     { Header: "Uploaded", accessor: "uploaded", width: 68 },
     { Header: "Ratio", accessor: "ratio", width: 40 },
-    { Header: "UL", accessor: "ul", width: 70 },
-    { Header: "DL", accessor: "dl", width: 70 },
-    { Header: "Added", accessor: "added", width: 69 }
+    { Header: "UL", accessor: "ul", width: 75 },
+    { Header: "DL", accessor: "dl", width: 85 },
+    { Header: "Added", accessor: "added", width: 69, show: false }
   ];
 
 class Popup extends Component {
@@ -35,7 +35,7 @@ class Popup extends Component {
   async getTorrents() {
   	var params = new URLSearchParams() 
   	params.append('mode', 'list'); 
-    params.append('cmd', 'd.custom=seedingtime');
+    params.append('cmd', 'd.custom=addedtime');
     var url = (await browser.storage.local.get('url')).url.replace(/(https?:\/\/)/, '$1' + (await browser.storage.local.get('username')).username + ':' + (await browser.storage.local.get('password')).password + '@');
 
   	var torrents = (await axios.post(url + '/plugins/httprpc/action.php', params)).data;
@@ -74,6 +74,7 @@ class Popup extends Component {
   		data: data
   	});
 
+    setTimeout(this.getTorrents, 1000);
   }
 
   handleResized() {
@@ -88,7 +89,6 @@ class Popup extends Component {
   			});
   		});
   	}
-    console.log(state);
   	return state;
   }
   handleOnResizeChange(state) {
