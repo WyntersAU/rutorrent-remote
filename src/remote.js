@@ -35,7 +35,7 @@ class Popup extends Component {
   async getTorrents() {
   	var params = new URLSearchParams() 
   	params.append('mode', 'list'); 
-    params.append('cmd', 'd.custom=addedtime');
+    params.append('cmd', 'd.custom=addtime');
     var url = (await browser.storage.local.get('url')).url.replace(/(https?:\/\/)/, '$1' + (await browser.storage.local.get('username')).username + ':' + (await browser.storage.local.get('password')).password + '@');
 
   	var torrents = (await axios.post(url + '/plugins/httprpc/action.php', params)).data;
