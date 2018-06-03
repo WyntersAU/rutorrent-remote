@@ -6,10 +6,10 @@ import { ContextMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu";
 
 var utilities = require("utilities.js");
 var columns = [
-    { Header: "Name", accessor: "name", width: 280 },
+    { Header: "Name", accessor: "name", width: 275 },
     { Header: "Status", accessor: "status", width: 57 },
     { Header: "Size", accessor: "size", width: 68 },
-    { Header: "Done", accessor: "done", width: 46 },
+    { Header: "Done", accessor: "done", width: 49 },
     { Header: "Downloaded", accessor: "downloaded", width: 79 },
     { Header: "Uploaded", accessor: "uploaded", width: 68 },
     { Header: "Ratio", accessor: "ratio", width: 40 },
@@ -68,6 +68,22 @@ class Popup extends Component {
   			dl: utilities.ToSpeed(+dl),
         added: added
   		};
+			if (info[1] != 0) {	
+				torrent.status = 'Started';
+				if ((info[4] == 0) || (info[29] == 0)) {
+					torrent.status = 'Paused';
+				}
+			}
+			if (info[24] != 0) {
+				torrent.status = 'Hashing';
+			}
+			if (info[2] != 0) {
+				torrent.status = 'Error';
+			}
+			if (+(torrent.downloaded / torrent.size * 100) == 100) {
+				torrent.status = 'Seeding';
+}
+
   		data.push(torrent);
     }
   	this.setState({

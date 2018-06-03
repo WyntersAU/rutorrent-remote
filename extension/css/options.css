@@ -1,9 +1,33 @@
-input {
-	display: inline;
-	margin-left: 50px;
+label {
+	display: inline-block;
+	width: 100px;
 }
 
-button {
-	width: 80px;
-	text-align: center;
+.headerContents {
+	margin-bottom: 7px;
+	margin-left: 35px;
 }
+.url {
+	width: 200px;
+}
+.userPass {
+	width: 115px;
+	margin-top: 7px;
+}
+.refreshRate {
+	width: 75px;
+}
+
+
+/* Work around.. */
+.password {
+	-moz-appearance: none;
+  	color: var(--in-content-text-color);
+  	border: 1px solid var(--in-content-box-border-color);
+  	border-radius: 2px;
+  	background-color: var(--in-content-box-background);
+  	font-family: inherit;
+	font-size: inherit;
+	padding: 5px 10px;
+}
+

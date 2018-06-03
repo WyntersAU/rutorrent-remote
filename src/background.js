@@ -6,6 +6,11 @@ browser.contextMenus.create({
     },
     contexts: ["link"],
 });
+browser.contextMenus.create({
+    id: 'options-page',
+    title: 'Options Page',
+    contexts: ['browser_action']
+});
 function notify(message) {
     browser.notifications.create('', { type: "basic", title: "ruTorrent Remote", message: message});
 }
@@ -85,8 +90,7 @@ browser.contextMenus.onClicked.addListener((info, tab) => {
                 notify(error.message);
             });
     }
-    else if (info.menuItemId === "download-and-archive") {
-        notify("Not Yet Implemented.");
+    if (info.menuItemId === 'options-page') {
+        browser.runtime.openOptionsPage()
     }
-    
 });
