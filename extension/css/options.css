@@ -14,12 +14,26 @@ label {
 	width: 115px;
 	margin-top: 7px;
 }
-.refreshRate {
-	width: 75px;
+.error {
+	width: auto;
+	height: 50px;
+	margin: 20px;
+  	border: 1px solid red;
+  	background-color: #f45f5f;
+
+  	font-family: inherit;
+	font-size: inherit;
 }
 
+/* Work arounds */
 
-/* Work around.. */
+.refreshRate {
+	width: 100px;
+}
+.refreshRate:focus {
+	border-color: var(--in-content-border-focus);
+}
+
 .password {
 	-moz-appearance: none;
   	color: var(--in-content-text-color);
@@ -30,4 +44,6 @@ label {
 	font-size: inherit;
 	padding: 5px 10px;
 }
-
+.password:focus {
+	border-color: var(--in-content-border-focus);
+}
