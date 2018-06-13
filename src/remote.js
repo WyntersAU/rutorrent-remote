@@ -1,26 +1,28 @@
-import React, { Component } from 'react'
+import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
 import ReactTable from 'react-table'
 import axios from 'axios'
-import { ContextMenu, MenuItem, SubMenu, ContextMenuTrigger } from "react-contextmenu";
-import { showMenu } from 'react-contextmenu/modules/actions'
+import {ContextMenu, MenuItem, SubMenu, ContextMenuTrigger} from "react-contextmenu";
+import {showMenu} from 'react-contextmenu/modules/actions'
 
 var utilities = require("utilities.js");
 var columns = [
-    { Header: "Name", accessor: "name", width: 250, Cell: row => (
+    {
+        Header: "Name", accessor: "name", width: 250, Cell: row => (
             <div title={row.value}>
                 {row.value}
             </div>
-        )},
-    { Header: "Status", accessor: "status", width: 80 },
-    { Header: "Size", accessor: "size", width: 68 },
-    { Header: "Done", accessor: "done", width: 49 },
-    { Header: "Downloaded", accessor: "downloaded", width: 79 },
-    { Header: "Uploaded", accessor: "uploaded", width: 68 },
-    { Header: "Ratio", accessor: "ratio", width: 40 },
-    { Header: "UL", accessor: "ul", width: 75 },
-    { Header: "DL", accessor: "dl", width: 85 },
-    { Header: "Added", accessor: "added", width: 69, show: false }
+        )
+    },
+    {Header: "Status", accessor: "status", width: 80},
+    {Header: "Size", accessor: "size", width: 68},
+    {Header: "Done", accessor: "done", width: 49},
+    {Header: "Downloaded", accessor: "downloaded", width: 82},
+    {Header: "Uploaded", accessor: "uploaded", width: 68},
+    {Header: "Ratio", accessor: "ratio", width: 40},
+    {Header: "UL", accessor: "ul", width: 75},
+    {Header: "DL", accessor: "dl", width: 85},
+    {Header: "Added", accessor: "added", width: 69, show: false}
 ];
 
 class Popup extends Component {
@@ -28,6 +30,11 @@ class Popup extends Component {
         super(props);
         this.state = {
             data: [],
+            dark: {
+                contextmenu: 'react-contextmenu--dark',
+                contextmenuitem: 'react-contextmenu--dark-item',
+                contextmenusubmenu: 'react-contextmenu-submenu--dark'
+            }
         };
 
         this.getTorrents = this.getTorrents.bind(this);
@@ -69,7 +76,7 @@ class Popup extends Component {
             torrent.done = torrent.done + '%';
             data.push(torrent);
         }
-        this.setState({ data: data });
+        this.setState({data: data});
         setTimeout(this.getTorrents, 1000);
     }
 
@@ -79,11 +86,12 @@ class Popup extends Component {
         if (!state) {
             state = [];
             columns.forEach((column) => {
-                state.push({ id: column.accessor, value: column.width });
+                state.push({id: column.accessor, value: column.width});
             });
         }
         return state;
     }
+
     handleOnResizeChange(state) {
         localStorage.setItem('table', JSON.stringify(state));
         this.forceUpdate();
@@ -92,14 +100,21 @@ class Popup extends Component {
     handleContextMenuClick_Start(e, state) {
         var row = state.row.row;
     }
+
     handleContextMenuClick_Stop(e, state) {
         var row = state.row.row;
     }
+
     handleContextMenuClick_Remove(e, state) {
         var row = state.row.row;
     }
+
     handleContextMenuClick_RemoveFiles(e, state) {
         var row = state.row.row;
+    }
+
+    cssLoaded() {
+        console.log('hello');
     }
 
     render() {
@@ -120,7 +135,7 @@ class Popup extends Component {
                     style={{
                         height: 'auto',
                     }}
-                    className="-highlight"
+                    className="-highlight ReactTable--dark"
                     getTdProps={(state, rowInfo, column, instance) => {
                         return {
                             onContextMenu: e => {
@@ -135,12 +150,12 @@ class Popup extends Component {
                             }
                         }
                     }}/>
-                <ContextMenu id='start-stop-delete'>
-                    <MenuItem onClick={this.handleContextMenuClick_Start} data={this.state}>Start</MenuItem>
-                    <MenuItem onClick={this.handleContextMenuClick_Stop} data={this.state}>Stop</MenuItem>
-                    <MenuItem divider />
-                    <SubMenu title={'Remove'} onClick={this.handleContextMenuClick_Remove} data={this.state}>
-                        <MenuItem onClick={this.handleContextMenuClick_RemoveFiles} data={this.state}>Remove and Delete Files</MenuItem>
+                <ContextMenu className='react-contextmenu--dark' id='start-stop-delete'>
+                    <MenuItem className='react-contextmenu--dark-item' onClick={this.handleContextMenuClick_Start} data={this.state}>Start</MenuItem>
+                    <MenuItem className='react-contextmenu--dark-item' onClick={this.handleContextMenuClick_Stop} data={this.state}>Stop</MenuItem>
+                    <MenuItem divider/>
+                    <SubMenu className='react-contextmenu-submenu--dark' title={'Remove'} onClick={this.handleContextMenuClick_Remove} data={this.state}>
+                        <MenuItem className='react-contextmenu--dark-item' onClick={this.handleContextMenuClick_RemoveFiles} data={this.state}>Remove and Delete Files</MenuItem>
                     </SubMenu>
                 </ContextMenu>
             </div>
@@ -148,5 +163,5 @@ class Popup extends Component {
     }
 }
 
-ReactDOM.render(<Popup />, document.getElementById('app'));
+ReactDOM.render(<Popup/>, document.getElementById('app'));
 export default Popup
