@@ -28,26 +28,57 @@ var columns = [
 class Popup extends Component {
     constructor(props) {
         super(props);
+
         this.state = {
             data: [],
-            dark: {
+            noDataText: 'Fetching information from ruTorrent',
+
+            activeTheme: localStorage.getItem('theme') || 'Light',  //Defaults theme to light if no theme is found in localStorage
+            Dark: {
                 contextmenu: 'react-contextmenu--dark',
                 contextmenuitem: 'react-contextmenu--dark-item',
-                contextmenusubmenu: 'react-contextmenu-submenu--dark'
+                contextmenusubmenu: 'react-contextmenu-submenu--dark',
+                table: "-highlight ReactTable--dark"
+            },
+            Light: {
+                contextmenu: 'react-contextmenu',
+                contextmenuitem: 'react-contextmenu-item',
+                contextmenusubmenu: 'react-contextmenu-submenu',
+                table: '-highlight'
             }
         };
 
-        this.getTorrents = this.getTorrents.bind(this);
-        this.handleOnResizeChange = this.handleOnResizeChange.bind(this);
-        this.getTorrents();
+        if (!localStorage.getItem('url') || !localStorage.getItem('username') || !localStorage.getItem('password')) {
+            this.state.noDataText = 'You need to enter your ruTorrent credentials in the Options Menu';
+        }
+
+        this.getTorrents();     //Beginning of our loop. There is a setTimeout inside getTorrents which will keep it going.
     }
 
     async getTorrents() {
         var params = new URLSearchParams()
         params.append('mode', 'list');
         params.append('cmd', 'd.custom=addtime');
-        var url = (await browser.storage.local.get('url')).url.replace(/(https?:\/\/)/, '$1' + (await browser.storage.local.get('username')).username + ':' + (await browser.storage.local.get('password')).password + '@');
-        var torrents = (await axios.post(url + '/plugins/httprpc/action.php', params)).data;
+        var url = localStorage.getItem('url').replace(/(https?:\/\/)/, '$1' + localStorage.getItem('username') + ':' + localStorage.getItem('password') + '@');
+        var torrents = null;
+
+        try {
+            torrents = (await axios.post(url + '/plugins/httprpc/action.php', params)).data;
+        }
+        catch (e) {
+            console.log(e);
+            if (e.message == 'Network Error') {
+                this.setState({noDataText: 'Invalid URL'});
+            }
+            else if (e.response.status == 401) {
+                this.setState({noDataText: 'Invalid username or password'})
+            }
+            else if (e.response.status != 200 || e.response == undefined) {
+                this.setState({noDataText: 'An unknown error occurred '});
+            }
+
+            return;
+        }
         var data = [];
 
         for (var hash in torrents.t) {
@@ -80,6 +111,19 @@ class Popup extends Component {
         setTimeout(this.getTorrents, 1000);
     }
 
+    handleContextMenuClick_Start(e, state) {
+        var row = state.row.row;
+    }
+    handleContextMenuClick_Stop(e, state) {
+        var row = state.row.row;
+    }
+    handleContextMenuClick_Remove(e, state) {
+        var row = state.row.row;
+    }
+    handleContextMenuClick_RemoveFiles(e, state) {
+        var row = state.row.row;
+    }
+
     handleResized() {
         var state = JSON.parse(localStorage.getItem('table'));
 
@@ -91,40 +135,19 @@ class Popup extends Component {
         }
         return state;
     }
-
     handleOnResizeChange(state) {
         localStorage.setItem('table', JSON.stringify(state));
         this.forceUpdate();
-    }
-
-    handleContextMenuClick_Start(e, state) {
-        var row = state.row.row;
-    }
-
-    handleContextMenuClick_Stop(e, state) {
-        var row = state.row.row;
-    }
-
-    handleContextMenuClick_Remove(e, state) {
-        var row = state.row.row;
-    }
-
-    handleContextMenuClick_RemoveFiles(e, state) {
-        var row = state.row.row;
-    }
-
-    cssLoaded() {
-        console.log('hello');
     }
 
     render() {
         return (
             <div>
                 <ReactTable
-                    noDataText="Fetching information from ruTorrent"
+                    noDataText={this.state.noDataText}
                     data={this.state.data}
                     columns={columns}
-                    pageSize={this.state.data.length || 3}
+                    pageSize={this.state.data.length || 3}  //Checks states' data for a length and if it doesn't find one it will default to 3.
                     showPagination={false}
                     defaultSorted={[{
                         id: "added",
@@ -135,8 +158,8 @@ class Popup extends Component {
                     style={{
                         height: 'auto',
                     }}
-                    className="-highlight ReactTable--dark"
-                    getTdProps={(state, rowInfo, column, instance) => {
+                    className={this.state[this.state.activeTheme]['table']}
+                    getTdProps={(state, rowInfo, column, instance) => { //Manually overriding the tableData properties and adding an event 'onContextMenu' to show the contextmenu on event.
                         return {
                             onContextMenu: e => {
                                 e.preventDefault();
@@ -149,13 +172,16 @@ class Popup extends Component {
                                 });
                             }
                         }
-                    }}/>
-                <ContextMenu className='react-contextmenu--dark' id='start-stop-delete'>
-                    <MenuItem className='react-contextmenu--dark-item' onClick={this.handleContextMenuClick_Start} data={this.state}>Start</MenuItem>
-                    <MenuItem className='react-contextmenu--dark-item' onClick={this.handleContextMenuClick_Stop} data={this.state}>Stop</MenuItem>
+                    }} //Manually overriding the tableData properties and adding an event 'onContextMenu' to show the contextmenu on event.
+                />
+
+                <ContextMenu className={this.state[this.state.activeTheme]['contextmenu']} id='start-stop-delete'>
+                    <MenuItem className={this.state[this.state.activeTheme]['contextmenuitem']} onClick={this.handleContextMenuClick_Start} data={this.state}>Start</MenuItem>
+                    <MenuItem className={this.state[this.state.activeTheme]['contextmenuitem']} onClick={this.handleContextMenuClick_Stop} data={this.state}>Stop</MenuItem>
                     <MenuItem divider/>
-                    <SubMenu className='react-contextmenu-submenu--dark' title={'Remove'} onClick={this.handleContextMenuClick_Remove} data={this.state}>
-                        <MenuItem className='react-contextmenu--dark-item' onClick={this.handleContextMenuClick_RemoveFiles} data={this.state}>Remove and Delete Files</MenuItem>
+                    <SubMenu className={this.state[this.state.activeTheme]['contextmenusubmenu']} title={'Remove'} onClick={this.handleContextMenuClick_Remove} data={this.state}>
+                        <MenuItem className={this.state[this.state.activeTheme]['contextmenuitem']}
+                                  onClick={this.handleContextMenuClick_RemoveFiles} data={this.state}>Remove and Delete Files</MenuItem>
                     </SubMenu>
                 </ContextMenu>
             </div>

@@ -60,12 +60,12 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 74);
+/******/ 	return __webpack_require__(__webpack_require__.s = 76);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 74:
+/***/ 76:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -77,19 +77,17 @@ function saveOptions() {
         return;
     }
 
-    browser.storage.local.set({
-        url: document.querySelector('#url').value,
-        username: document.querySelector('#username').value,
-        password: document.querySelector('#password').value
-    });
+    localStorage.setItem('url', document.querySelector('#url').value);
+    localStorage.setItem('username', document.querySelector('#username').value);
+    localStorage.setItem('password', document.querySelector('#password').value);
+    localStorage.setItem('theme', document.querySelector('#theme').value);
 }
 
 function restoreOptions() {
-    browser.storage.local.get(function (result) {
-        document.querySelector('#url').value = result.url || '';
-        document.querySelector('#username').value = result.username || '';
-        document.querySelector('#password').value = result.password || '';
-    });
+    document.querySelector('#url').value = localStorage.getItem('url') || '';
+    document.querySelector('#username').value = localStorage.getItem('username') || '';
+    document.querySelector('#password').value = localStorage.getItem('password') || '';
+    document.querySelector('#theme').value = localStorage.getItem('theme') || 'Light';
 }
 
 document.addEventListener("DOMContentLoaded", restoreOptions);

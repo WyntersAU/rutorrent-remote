@@ -4,19 +4,17 @@ function saveOptions () {
         return;
     }
 
-    browser.storage.local.set({
-        url: document.querySelector('#url').value,
-        username: document.querySelector('#username').value,
-        password: document.querySelector('#password').value,
-    });
+    localStorage.setItem('url', document.querySelector('#url').value);
+    localStorage.setItem('username', document.querySelector('#username').value);
+    localStorage.setItem('password', document.querySelector('#password').value);
+    localStorage.setItem('theme', document.querySelector('#theme').value);
 }
 
 function restoreOptions () {
-    browser.storage.local.get(function (result) {
-        document.querySelector('#url').value = result.url || '';
-        document.querySelector('#username').value = result.username || '';
-        document.querySelector('#password').value = result.password || '';
-    });
+    document.querySelector('#url').value = localStorage.getItem('url') || '';
+    document.querySelector('#username').value = localStorage.getItem('username') || '';
+    document.querySelector('#password').value = localStorage.getItem('password') || '';
+    document.querySelector('#theme').value = localStorage.getItem('theme') || 'Light';
 }
 
 document.addEventListener("DOMContentLoaded", restoreOptions);
