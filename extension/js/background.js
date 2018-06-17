@@ -60,32 +60,29 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 26);
+/******/ 	return __webpack_require__(__webpack_require__.s = 0);
 /******/ })
 /************************************************************************/
-/******/ ({
-
-/***/ 26:
+/******/ ([
+/* 0 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-browser.contextMenus.create({
+chrome.contextMenus.create({
     id: "upload-to-rutorrent",
     title: "Upload to ruTorrent",
-    icons: {
-        "32": "images/rtorrent-32.png"
-    },
+
     contexts: ["link"]
 });
-browser.contextMenus.create({
+chrome.contextMenus.create({
     id: 'options-page',
     title: 'Options Page',
     contexts: ['browser_action']
 });
 function notify(message) {
-    browser.notifications.create('', { type: "basic", title: "ruTorrent Remote", message: message });
+    chrome.notifications.create('', { type: "basic", title: "ruTorrent Remote", message: message });
 }
 
 function getTorrentFile(info, tab) {
@@ -143,7 +140,7 @@ function uploadToRutorrent(response) {
     });
 }
 
-browser.contextMenus.onClicked.addListener((info, tab) => {
+chrome.contextMenus.onClicked.addListener((info, tab) => {
     if (info.menuItemId === "upload-to-rutorrent") {
         getTorrentFile(info, tab).then(function (response) {
             uploadToRutorrent(response).then(function (uploaded) {
@@ -161,6 +158,5 @@ browser.contextMenus.onClicked.addListener((info, tab) => {
 });
 
 /***/ })
-
-/******/ });
+/******/ ]);
 //# sourceMappingURL=background.js.map

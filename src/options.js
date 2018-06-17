@@ -1,6 +1,6 @@
 function saveOptions () {
     if (!/(https|http)/.test(document.querySelector('#url').value)) {
-        browser.notifications.create('', { type: "basic", title: "ruTorrent Remote", message: 'URL must start with either "https" or "http"'});
+        chrome.notifications.create('', { type: "basic", title: "ruTorrent Remote", message: 'URL must start with either "https" or "http"'});
         return;
     }
 
