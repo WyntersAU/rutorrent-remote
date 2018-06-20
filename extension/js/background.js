@@ -60,20 +60,22 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
+/******/ 	return __webpack_require__(__webpack_require__.s = 28);
 /******/ })
 /************************************************************************/
-/******/ ([
-/* 0 */
+/******/ ({
+
+/***/ 28:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
+var utilities = __webpack_require__(7);
+
 chrome.contextMenus.create({
     id: "upload-to-rutorrent",
     title: "Upload to ruTorrent",
-
     contexts: ["link"]
 });
 chrome.contextMenus.create({
@@ -81,82 +83,89 @@ chrome.contextMenus.create({
     title: 'Options Page',
     contexts: ['browser_action']
 });
-function notify(message) {
-    chrome.notifications.create('', { type: "basic", title: "ruTorrent Remote", message: message });
-}
-
-function getTorrentFile(info, tab) {
-
-    var promise = new Promise((resolve, reject) => {
-        var request = new XMLHttpRequest();
-        request.responseType = 'blob';
-        request.open('GET', info.linkUrl, true);
-
-        request.onreadystatechange = function () {
-            if (request.readyState !== XMLHttpRequest.DONE) return;
-            if (!/\.torrent/.test(request.getAllResponseHeaders())) {
-                reject(new Error('Unable to determine whether file is a torrent'));
-            }
-
-            resolve(request.response);
-        };
-
-        request.send(null);
-    });
-
-    return promise;
-}
-function uploadToRutorrent(response) {
-    return browser.storage.local.get().then(options => {
-        var promise = new Promise((resolve, reject) => {
-            if (options.url == null) {
-                reject(new Error("Goto Add-ons -> ruTorrent Remote -> Options and set the options."));
-                return;
-            }
-
-            var formData = new FormData();
-            formData.append('torrent_file', response, (Math.random() * response.size).toString() + ".torrent");
-
-            var r = new XMLHttpRequest();
-            r.timeout = 5000;
-
-            var url = '';
-            var auth = options.username + ':' + options.password + '@';
-            if (options.username.length > 0) url = options.url.replace(":\/\/", "://" + auth);
-            r.open('POST', url + '/php/addtorrent.php', true);
-            r.onload = function () {
-                if (this.status == 200) {
-                    resolve("Uploaded");
-                } else {
-                    reject(new Error("Failed to upload: " + this.status));
-                }
-            };
-            r.ontimeout = function (e) {
-                reject(new Error("Timed out"));
-            };
-            r.send(formData);
-        });
-        return promise;
-    });
-}
 
 chrome.contextMenus.onClicked.addListener((info, tab) => {
-    if (info.menuItemId === "upload-to-rutorrent") {
-        getTorrentFile(info, tab).then(function (response) {
-            uploadToRutorrent(response).then(function (uploaded) {
-                notify(uploaded);
-            }).catch(function (error) {
-                notify(error.message);
-            });
-        }).catch(function (error) {
-            notify(error.message);
-        });
-    }
-    if (info.menuItemId === 'options-page') {
-        browser.runtime.openOptionsPage();
+    if (info.menuItemId === "upload-to-rutorrent") {}
+    if (utilities.GetBrowser() == 'Firefox') {
+        if (info.menuItemId === 'options-page') {
+            browser.runtime.openOptionsPage();
+        }
     }
 });
 
+/***/ }),
+
+/***/ 7:
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.ToBytes = ToBytes;
+exports.ToSpeed = ToSpeed;
+exports.GetBrowser = GetBrowser;
+//https://stackoverflow.com/a/18650828
+function ToBytes(bytes, decimals) {
+    if (bytes == 0) return '0 B';
+    var k = 1024,
+        dm = decimals || 2,
+        sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
+        i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+}
+
+function ToSpeed(bytes, decimals) {
+    if (bytes == 0) return '0 B/s';
+    var k = 1024,
+        dm = decimals || 2,
+        speeds = ['B/s', 'KB/s', 'MB/s', 'GB/s', 'TB/s', 'PB/s', 'EB/s', 'ZB/s', 'YB/s'],
+        i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + speeds[i];
+}
+
+//https://stackoverflow.com/a/45985333
+function GetBrowser() {
+    if (typeof chrome !== "undefined") {
+        if (typeof browser !== "undefined") {
+            return "Firefox";
+        } else {
+            return "Chrome";
+        }
+    } else {
+        return "Edge";
+    }
+}
+
+function removeSavePath(e) {
+    e.parentNode.remove();
+}
+function addSavePath(path) {
+    var savePathList = document.getElementById('savePathList');
+    var li = document.createElement('li');
+    var div = document.createElement('div');
+    var button = document.createElement('button');
+
+    li.className = 'savePathRow';
+
+    div.className = 'savePathRowText';
+    div.innerText = path;
+
+    button.className = 'savePathRowButton';
+    button.type = 'button';
+    button.innerText = 'X';
+    button.onclick = e => {
+        removeSavePath(e.target);
+    };
+
+    li.appendChild(div);
+    li.appendChild(button);
+    savePathList.appendChild(li);
+}
+
 /***/ })
-/******/ ]);
+
+/******/ });
 //# sourceMappingURL=background.js.map

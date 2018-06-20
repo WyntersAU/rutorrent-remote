@@ -1,3 +1,7 @@
 body {
   width: auto;
+
+}
+body, html {
+	margin: 0;
 }

@@ -25,6 +25,34 @@ label {
 	font-size: inherit;
 }
 
+.savePath {
+	width: 350px;
+	list-style-type: none;
+	border: 1px solid #d1d5da;
+	border-radius: 3px;
+	padding: 0;
+}
+.savePathInput {
+	width: 227px;
+}
+.savePathRow {
+	border-top: 1px solid #e1e4e8;
+	padding: 4px;
+	display: flex;
+}
+.savePathRow:first-of-type {
+	border-top-color: transparent;
+}
+.savePathRowText {
+	align-self: center;
+}
+.savePathRowButton {
+	width: 35px;
+	min-width: 0px;
+	margin-left: auto;
+	border-radius: 3px;
+}
+
 /* Work arounds */
 
 .refreshRate {

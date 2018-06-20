@@ -9,7 +9,7 @@ import {showMenu} from 'react-contextmenu/modules/actions'
 var utilities = require("utilities.js");
 var columns = [
     {
-        Header: "Name", accessor: "name", width: 250, Cell: row => (
+        Header: "Name", accessor: "name", width: 220, Cell: row => (
             <div title={row.value}>
                 {row.value}
             </div>
@@ -73,9 +73,11 @@ class Popup extends Component {
         var result = null;
 
         try {
-            result = (await axios(options)).data;
+            result = (await axios(options));
+            console.log(result);
         }
         catch (e) {
+            console.log(e);
             if (e.message == 'Network Error') {
                 this.ThrowError('Invalid URL');
             }
@@ -119,8 +121,9 @@ class Popup extends Component {
             torrent.done = torrent.done + '%';
             data.push(torrent);
         }
+        console.log(data);
         this.setState({data: data});
-        setTimeout(this.getTorrents, 1000);
+        setTimeout(this.getTorrents.bind(this), 1000);
     }
 
     handleContextMenuClick_Start(e, state) {

@@ -16,3 +16,40 @@ export function ToSpeed(bytes, decimals) {
       i = Math.floor(Math.log(bytes) / Math.log(k));
   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + speeds[i];
 }
+
+//https://stackoverflow.com/a/45985333
+export function GetBrowser() {
+    if (typeof chrome !== "undefined") {
+        if (typeof browser !== "undefined") {
+            return "Firefox";
+        } else {
+            return "Chrome";
+        }
+    } else {
+        return "Edge";
+    }
+}
+
+function removeSavePath(e) {
+    e.parentNode.remove();
+}
+function addSavePath(path) {
+    var savePathList = document.getElementById('savePathList');
+    var li = document.createElement('li');
+    var div = document.createElement('div');
+    var button = document.createElement('button');
+
+    li.className = 'savePathRow';
+
+    div.className = 'savePathRowText';
+    div.innerText = path;
+
+    button.className = 'savePathRowButton';
+    button.type = 'button';
+    button.innerText = 'X';
+    button.onclick = (e) => {removeSavePath(e.target);};
+
+    li.appendChild(div);
+    li.appendChild(button);
+    savePathList.appendChild(li);
+}
