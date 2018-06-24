@@ -18,11 +18,11 @@ var columns = [
     {Header: "Status", accessor: "status", width: 80},
     {Header: "Size", accessor: "size", width: 68},
     {Header: "Done", accessor: "done", width: 49},
-    {Header: "Downloaded", accessor: "downloaded", width: 82},
+    {Header: "Downloaded", accessor: "downloaded", width: 84},
     {Header: "Uploaded", accessor: "uploaded", width: 68},
     {Header: "Ratio", accessor: "ratio", width: 40},
     {Header: "UL", accessor: "ul", width: 75},
-    {Header: "DL", accessor: "dl", width: 85},
+    {Header: "DL", accessor: "dl", width: 75},
     {Header: "Added", accessor: "added", width: 69, show: false}    //We're hiding the Added time column, but sorting it as our default
 ];
 
@@ -47,7 +47,7 @@ class Popup extends Component {
                 table: '-highlight'
             },
             options: {
-                'url': (localStorage.getItem('url') || ''),
+                'url': (localStorage.getItem('url') + '/plugins/httprpc/action.php' || ''),
                 'method': 'post',
                 'headers': {'content-type': 'application/x-www-form-urlencoded'},
                 'auth': {
@@ -65,34 +65,32 @@ class Popup extends Component {
         }
     }
 
-    ThrowError(message) {
+    throwError(message) {
         this.setState({noDataText: message});
     }
-    async MakeRPCall(parameters) {
+    async makeRPCall(parameters) {
         var options = Object.assign({ 'data': qs.stringify(parameters) }, this.state.options);
         var result = null;
 
         try {
-            result = (await axios(options));
-            console.log(result);
+            result = (await axios(options)).data;
         }
         catch (e) {
-            console.log(e);
             if (e.message == 'Network Error') {
-                this.ThrowError('Invalid URL');
+                this.throwError('Invalid URL');
             }
             else if (e.response.status == 401) {
-                this.ThrowError('Invalid username or password');
+                this.throwError('Invalid username or password');
             }
             else if (e.response.status != 200 || e.response == undefined) {
-                this.ThrowError('An unknown error occurred ');
+                this.throwError('An unknown error occurred ');
             }
             return;
         }
         return result;
     }
     async getTorrents() {
-        var torrents = await this.MakeRPCall({'mode': 'list', 'cmd': 'd.custom=addtime'});
+        var torrents = await this.makeRPCall({'mode': 'list', 'cmd': 'd.custom=addtime'});
         var data = [];
 
         for (var hash in torrents.t) {
@@ -121,7 +119,6 @@ class Popup extends Component {
             torrent.done = torrent.done + '%';
             data.push(torrent);
         }
-        console.log(data);
         this.setState({data: data});
         setTimeout(this.getTorrents.bind(this), 1000);
     }
