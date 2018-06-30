@@ -11,6 +11,7 @@ chrome.contextMenus.create({
     contexts: ['browser_action']
 });
 
+
 chrome.contextMenus.onClicked.addListener((info, tab) => {
     if (info.menuItemId === "upload-to-rutorrent") {
 

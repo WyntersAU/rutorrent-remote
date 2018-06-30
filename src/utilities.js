@@ -1,3 +1,6 @@
+import qs from 'qs'
+import axios from 'axios'
+
 //https://stackoverflow.com/a/18650828
 export function ToBytes(bytes, decimals) {
 	if(bytes == 0) return '0 B';
@@ -52,4 +55,35 @@ function addSavePath(path) {
     li.appendChild(div);
     li.appendChild(button);
     savePathList.appendChild(li);
+}
+
+export async function makeRPCall(parameters) {
+    var options = {
+        'url': (localStorage.getItem('url') + '/plugins/httprpc/action.php' || ''),
+        'method': 'post',
+        'headers': {'content-type': 'application/x-www-form-urlencoded'},
+        'auth': {
+            'username': localStorage.getItem('username') || '',
+            'password': localStorage.getItem('password') || ''
+        },
+        'data': qs.stringify(parameters)
+    };
+    var result = null;
+
+    try {
+        result = (await axios(options)).data;
+    }
+    catch (e) {
+        if (e.message == 'Network Error') {
+            this.throwError('Invalid URL');
+        }
+        else if (e.response.status == 401) {
+            this.throwError('Invalid username or password');
+        }
+        else if (e.response.status != 200 || e.response == undefined) {
+            this.throwError('An unknown error occurred ');
+        }
+        return;
+    }
+    return result;
 }

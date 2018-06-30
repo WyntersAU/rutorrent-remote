@@ -3,28 +3,28 @@ const webpack = require('webpack');
 
 module.exports = {
   entry: {
-    background: './src/background.js',
-    remote: './src/remote.js',
-    utilities: './src/utilities.js',
-    options: './src/options.js'
+      background: './src/background.js',
+      remote: './src/remote.js',
+      utilities: './src/utilities.js',
+      options: './src/options.js'
   },
   output: {
-    path: path.join(path.resolve(__dirname), 'extension', 'js'),
-    filename: '[name].js',
+      path: path.join(path.resolve(__dirname), 'extension', 'js'),
+      filename: '[name].js',
   },
   module: {
-    rules: [{
-      exclude: /node_modules/,
-      test: /\.js$/,
-      use: ['babel-loader'],
-    }],
+      rules: [{
+        exclude: /node_modules/,
+        test: /\.js$/,
+        use: ['babel-loader'],
+      }],
   },
   resolve: {
-    extensions: ['.js', '.jsx'],
-    modules: [
-      'src',
-      'node_modules',
-    ],
+      extensions: ['.js', '.jsx'],
+      modules: [
+        'src',
+        'node_modules',
+      ],
   },
   node: {
     target: 'empty',

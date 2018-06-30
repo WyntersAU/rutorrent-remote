@@ -5,8 +5,9 @@ import qs from 'qs'
 import axios from 'axios'
 import {ContextMenu, MenuItem, SubMenu, ContextMenuTrigger} from "react-contextmenu";
 import {showMenu} from 'react-contextmenu/modules/actions'
+import ruTorrent from 'rutorrent.js'
 
-var utilities = require("utilities.js");
+//var utilities = require("utilities.js");
 var columns = [
     {
         Header: "Name", accessor: "name", width: 220, Cell: row => (
@@ -20,7 +21,7 @@ var columns = [
     {Header: "Done", accessor: "done", width: 49},
     {Header: "Downloaded", accessor: "downloaded", width: 84},
     {Header: "Uploaded", accessor: "uploaded", width: 68},
-    {Header: "Ratio", accessor: "ratio", width: 40},
+    {Header: "Ratio", accessor: "ratio", width: 42},
     {Header: "UL", accessor: "ul", width: 75},
     {Header: "DL", accessor: "dl", width: 75},
     {Header: "Added", accessor: "added", width: 69, show: false}    //We're hiding the Added time column, but sorting it as our default
@@ -68,29 +69,8 @@ class Popup extends Component {
     throwError(message) {
         this.setState({noDataText: message});
     }
-    async makeRPCall(parameters) {
-        var options = Object.assign({ 'data': qs.stringify(parameters) }, this.state.options);
-        var result = null;
-
-        try {
-            result = (await axios(options)).data;
-        }
-        catch (e) {
-            if (e.message == 'Network Error') {
-                this.throwError('Invalid URL');
-            }
-            else if (e.response.status == 401) {
-                this.throwError('Invalid username or password');
-            }
-            else if (e.response.status != 200 || e.response == undefined) {
-                this.throwError('An unknown error occurred ');
-            }
-            return;
-        }
-        return result;
-    }
     async getTorrents() {
-        var torrents = await this.makeRPCall({'mode': 'list', 'cmd': 'd.custom=addtime'});
+        var torrents = await utilities.makeRPCall({'mode': 'list', 'cmd': 'd.custom=addtime'});
         var data = [];
 
         for (var hash in torrents.t) {
