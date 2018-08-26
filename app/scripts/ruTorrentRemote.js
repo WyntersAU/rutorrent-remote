@@ -39,7 +39,13 @@ export class ruTorrentRemote {
         else if (url.startsWith('http')) {
             let file = await axios.get(url, { responseType: 'blob' });
             if (file.data.type != 'application/x-bittorrent') {
-                throw new Error('Provided link is not a torrent');
+                browser.notifications.create('', {
+                    type: 'basic',
+                    title: 'ruTorrent Remote',
+                    iconUrl: 'images/icon-128.png',
+                    message: 'Link is not a torrent or magnet'
+                });
+                return;
             }
             var json = {
                 dir_edit: path || '',

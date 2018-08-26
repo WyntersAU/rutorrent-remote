@@ -8,6 +8,7 @@ function saveOptions () {
     localStorage.setItem('username', document.querySelector('#username').value);
     localStorage.setItem('password', document.querySelector('#password').value);
     //localStorage.setItem('theme', document.querySelector('#theme').value);
+    browser.runtime.reload();
 }
 
 function restoreOptions () {
