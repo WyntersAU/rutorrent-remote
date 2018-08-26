@@ -1,0 +1,19 @@
+{
+  "name": "rutorrent-remote",
+  "version": "2.1.0",
+  "description": "Manage your torrents fast-and-easy without the hassle of keeping a tab open just to check on them, also adds a context menu entry for adding torrents to ruTorrent!",
+  "scripts": {
+    "dev": "webextension-toolbox dev",
+    "build": "webextension-toolbox build"
+  },
+  "devDependencies": {
+    "axios": "^0.18.0",
+    "json-form-data": "^1.3.0",
+    "qs": "^6.5.2",
+    "react": "^16.4.2",
+    "react-contextmenu": "^2.9.3",
+    "react-dom": "^16.4.2",
+    "react-table": "^6.8.6",
+    "webextension-toolbox": "latest"
+  }
+}

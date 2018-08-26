@@ -1,0 +1,12 @@
+body {
+    width: auto;
+    font-family: "Segoe UI", Tahoma, sans-serif;
+    font-size: 75%;
+}
+body, html {
+    margin: 0;
+}
+
+html {
+    overflow-y: scroll;
+}
