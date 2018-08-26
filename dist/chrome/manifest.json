@@ -31,6 +31,7 @@
     "downloads",
     "notifications",
     "storage",
-    "webRequest"
+    "webRequest",
+    "management"
   ]
 }
