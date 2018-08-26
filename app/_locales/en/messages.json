@@ -8,7 +8,7 @@
     "description": "The short_name (maximum of 12 characters recommended) is a short version of the app's name."
   },
   "appDescription": {
-    "message": "Manage your torrents fast-and-easy without the hassle of keeping a tab open just to check on them, also adds a context menu entry for adding torrents to ruTorrent!",
+    "message": "Manage your torrents without keeping a tab open, also adds a context menu entry for adding torrents to ruTorrent!",
     "description": "The description of the application"
   },
   "browserActionTitle": {

@@ -6,7 +6,9 @@ var utilities = require('./utilities');
 export class ruTorrentRemote {
     constructor(parameters) {
         let {username, password, url} = parameters;
-
+        
+        if (!username || !password || !url)
+            return;
         this.cid = 0;
         this.data = [];
         this.url = url.replace(/\/$/);

@@ -23,7 +23,12 @@ browser.contextMenus.onClicked.addListener(async (info, tab) => {
         var result = await ruTorrent.AddTorrent({
             url: info.linkUrl
         });
-        console.log(result);
+        browser.notifications.create('', {
+        	type: 'basic',
+        	title: 'ruTorrent Remote',
+        	iconUrl: 'images/icon-128.png',
+        	message: result ? 'Torrent has been uploaded' : 'Torrent failed to upload'
+        });
     }
     else if (info.menuItemId === 'options-page') {
         browser.runtime.openOptionsPage()
