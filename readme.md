@@ -1,15 +1,11 @@
 # ruTorrent Remote!
-Manage your torrents fast-and-easy without the hassle of keeping a tab open just to check on them!
+Manage your torrents fast-and-easy without the hassle of keeping a tab open just to check on them! Also adds a nifty little feature to add torrents through a context-menu entry!
 
 # Installation
-1. Visit the [ruTorrent Remote](https://addons.mozilla.org/en-US/firefox/addon/rutorrent-remote/) addon page on the Firefox Addon Repository
-2. Click "Add to Firefox"
-3. Right-click on the icon of ruTorrent Remote up in the top right-hand corner and select "Options Page"
-4. Fill-out your ruTorrent credentials and select any according settings you wish to change.
+<a href="https://chrome.google.com/webstore/detail/rutorrent-remote/kpfomeklpedfpbidpigklbknkfidfmja"><img src="https://github.com/Winter/rutorrent-remote/raw/master/promo/chrome_128x128.png" width="48" /></a><a href="https://addons.mozilla.org/en-US/firefox/addon/rutorrent-remote/"><img src="https://github.com/Winter/rutorrent-remote/raw/master/promo/firefox_128x128.png" width="48" /></a>
 
-# Changelog
-ruTorrent Remote uses the [Github releases tab](https://github.com/Winter/rutorrent-remote/releases) for maintaining a history
-of it's releases.
+# Setup
+..todo.
 
 # License 
 MIT License.
