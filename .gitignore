@@ -1,1 +1,7 @@
+<<<<<<< HEAD
 node_modules/
+=======
+node_modules/
+dist/
+packages/
+>>>>>>> fccf34b6ad0fb3edf1cd91da84e401c59525495a
