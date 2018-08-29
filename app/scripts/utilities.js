@@ -95,3 +95,12 @@ export function toFormData(fd) {
 export function toQueryString(qs) {
     return qs.stringify(qs);
 }
+export function ThrowNotification(error) {
+    browser.notifications.create(error, {
+        type: 'basic',
+        title: 'ruTorrent Remote',
+        iconUrl: 'images/icon-128.png',
+        message: error
+    });
+    return false;
+}

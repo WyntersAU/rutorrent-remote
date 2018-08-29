@@ -1,7 +1,7 @@
 import axios from 'axios'
-import qs from 'qs';
-import jsonToFormData from 'json-form-data';
-var utilities = require('./utilities');
+import qs from 'qs'
+import jsonToFormData from 'json-form-data'
+import {ThrowNotification, ToBytes, ToSpeed} from './utilities'
 
 export class ruTorrentRemote {
     constructor(parameters) {
@@ -30,7 +30,6 @@ export class ruTorrentRemote {
                 tadd_label: label || '',
                 url: url
             };
-
             var response = await axios.post(this.url + '/php/addtorrent.php', jsonToFormData(json), this.config);
             if (response.status == 200)
                 return true;
@@ -38,15 +37,8 @@ export class ruTorrentRemote {
         }
         else if (url.startsWith('http')) {
             let file = await axios.get(url, { responseType: 'blob' });
-            if (file.data.type != 'application/x-bittorrent') {
-                browser.notifications.create('', {
-                    type: 'basic',
-                    title: 'ruTorrent Remote',
-                    iconUrl: 'images/icon-128.png',
-                    message: 'Link is not a torrent or magnet'
-                });
-                return;
-            }
+            if (file.data.type != 'application/x-bittorrent') 
+                return ThrowNotification('Link is not a torrent or magnet');  
             var json = {
                 dir_edit: path || '',
                 tadd_label: label || '',
@@ -55,10 +47,10 @@ export class ruTorrentRemote {
             var response = await axios.post(this.url + '/php/addtorrent.php', jsonToFormData(json), this.config);
             if (response.status == 200)
                 return true;
-            return false;
+            return ThrowNotification('Didn\'t get Status 200');
         }
         else {
-            throw new Error('Unknown URL resource');
+            return ThrowNotification('Unrecognized URL resource');
         }
     }
 
@@ -79,13 +71,13 @@ export class ruTorrentRemote {
             var torrent = {
                 name: info[4],
                 status: "Unknown",
-                size: utilities.ToBytes(info[5]),
+                size: ToBytes(info[5]),
                 done: +(info[8] / info[5] * 100).toFixed(2),
-                downloaded: utilities.ToBytes(+info[8]),
-                uploaded: utilities.ToBytes(+info[9]),
+                downloaded: ToBytes(+info[8]),
+                uploaded: ToBytes(+info[9]),
                 ratio: +(info[10] / 1000).toFixed(3),
-                ul: utilities.ToSpeed(+info[11]),
-                dl: utilities.ToSpeed(+info[12]),
+                ul: ToSpeed(+info[11]),
+                dl: ToSpeed(+info[12]),
                 added: info[34]
             };
             if (torrent.done > 0) {
