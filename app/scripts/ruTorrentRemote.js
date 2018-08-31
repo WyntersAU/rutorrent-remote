@@ -24,7 +24,7 @@ export class ruTorrentRemote {
     async AddTorrent(parameters) {
         let {url, path, label} = parameters;
 
-        if (url.startsWith('magnet')) { //link is a magnet and we should add accordingly.
+        if (url.startsWith('magnet')) {
             var json = {
                 dir_edit: path || '',
                 tadd_label: label || '',
@@ -57,16 +57,13 @@ export class ruTorrentRemote {
     async GetTorrents() {
         let response = await axios.post(this.url + '/plugins/httprpc/action.php', qs.stringify({'mode': 'list', 'cmd': 'd.custom=addtime'}), this.config);
         
-        if (response.status != 200) {
-            //throw new Error('200 was not returned, further debugging required');
-        }
+        if (response.status != 200) { }
 
-        //We've passed all our checks and the data is OK
         if (response.data.cid == this.cid)
-            return this.data;   //Our cid matches the servers cid, no need to process the old data just return it
-        this.data = []; //Our cid doesn't match the servers cid, clear out the old data to let the new data in
+            return this.data;
+        this.data = [];
 
-        for (var hash in response.data.t) {  //We're now looping through each torrent in $.t
+        for (var hash in response.data.t) {
             var info = response.data.t[hash];
             var torrent = {
                 name: info[4],
@@ -92,7 +89,6 @@ export class ruTorrentRemote {
             torrent.done = torrent.done + '%';
             this.data.push(torrent);
         }
-        //We've finished parsing all the data and it's all in `this.data`
         return this.data;
     }
 }
