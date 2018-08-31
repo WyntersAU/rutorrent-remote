@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {ruTorrentRemote} from './ruTorrentRemote';
+import {ruTorrentRemote, GetBrowser} from './ruTorrentRemote';
 
 let ruTorrent = new ruTorrentRemote({
     username: localStorage.getItem('username'),
@@ -31,6 +31,7 @@ browser.contextMenus.onClicked.addListener(async (info, tab) => {
         });
     }
     else if (info.menuItemId === 'options-page') {
-        browser.runtime.openOptionsPage()
+        if (GetBrowser() == 'Firefox')
+            browser.runtime.openOptionsPage()
     }
 });
