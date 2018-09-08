@@ -3,8 +3,3 @@ cache:
   bundler: true
   directories:
   - node_modules
-install:
-  - npm install -g codecov
-script:
-  - istanbul cover ./node_modules/mocha/bin/_mocha --reporter lcovonly -- -R spec
-  - codecov
