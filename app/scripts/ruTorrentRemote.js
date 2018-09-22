@@ -5,13 +5,14 @@ import {ThrowNotification, ToBytes, ToSpeed} from './utilities'
 
 export class ruTorrentRemote {
     constructor(parameters) {
+        super(parameters);
         let {username, password, url} = parameters;
         
         if (!username || !password || !url)
             return;
         this.cid = 0;
         this.data = [];
-        this.url = url.replace(/\/$/);
+        this.url = url.replace(/\/$/, '');
 
         this.config = {
             auth: {
@@ -57,7 +58,9 @@ export class ruTorrentRemote {
     async GetTorrents() {
         let response = await axios.post(this.url + '/plugins/httprpc/action.php', qs.stringify({'mode': 'list', 'cmd': 'd.custom=addtime'}), this.config);
         
-        if (response.status != 200) { }
+        if (response.status != 200) {
+
+        }
 
         if (response.data.cid == this.cid)
             return this.data;

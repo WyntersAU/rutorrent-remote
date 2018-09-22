@@ -1,6 +1,6 @@
 {
-  "name": "rutorrent-remote",
-  "version": "2.1.2",
+  "name": "torrent-remote",
+  "version": "2.1.3",
   "description": "Manage your torrents fast-and-easy without the hassle of keeping a tab open just to check on them, also adds a context menu entry for adding torrents to ruTorrent!",
   "scripts": {
     "dev": "webextension-toolbox dev",
@@ -8,7 +8,9 @@
   },
   "devDependencies": {
     "axios": "^0.18.0",
+    "chai": "^4.1.2",
     "json-form-data": "^1.3.0",
+    "mocha": "^5.2.0",
     "qs": "^6.5.2",
     "react": "^16.4.2",
     "react-contextmenu": "^2.9.3",

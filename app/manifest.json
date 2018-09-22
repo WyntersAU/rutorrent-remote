@@ -2,7 +2,7 @@
   "name": "__MSG_appName__",
   "short_name": "__MSG_appShortName__",
   "description": "__MSG_appDescription__",
-  "version": "2.1.2",
+  "version": "2.1.3",
   "manifest_version": 2,
   "default_locale": "en",
   "icons": {
@@ -23,7 +23,8 @@
   "options_page": "pages/options.html",
   "options_ui": {
     "page": "pages/options.html"
-  },
+},
+
   "permissions": [
     "<all_urls>",
     "contextMenus",

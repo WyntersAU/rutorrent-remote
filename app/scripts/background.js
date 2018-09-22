@@ -1,11 +1,5 @@
 import axios from 'axios';
-import {ruTorrentRemote, GetBrowser} from './ruTorrentRemote';
-
-let ruTorrent = new ruTorrentRemote({
-    username: localStorage.getItem('username'),
-    password: localStorage.getItem('password'),
-    url: localStorage.getItem('url')
-});
+import { GetBrowser } from './utilities'
 
 browser.contextMenus.create({
     id: "upload-to-rutorrent",

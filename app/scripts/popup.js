@@ -4,13 +4,14 @@ import ReactTable from 'react-table'
 import ReactContextMenu from 'react-contextmenu'
 import axios from 'axios'
 import qs from 'qs'
-import {ruTorrentRemote} from './ruTorrentRemote'
+import {ruTorrentRemote, ruTorrentClient} from './clients/ruTorrentClient'
+import { ThrowClassNotification } from './utilities'
+
 var utilities = require('./utilities')
 
 class Popup extends Component {
     constructor(props) {
         super(props);
-
         this.state = {
             noDataText: 'Fetching information from ruTorrent',
             cid: 0,
@@ -22,16 +23,14 @@ class Popup extends Component {
             return;
         }
 
-        this.ruTorrentRemote = new ruTorrentRemote({
+        this.ruTorrentClient = new ruTorrentClient({
             username: localStorage.getItem('username'),
             password: localStorage.getItem('password'),
             url: localStorage.getItem('url')
         });
 
         setInterval(async () => {
-            this.setState({ 
-                data: await this.ruTorrentRemote.GetTorrents() 
-            });
+            this.setState({ data: await this.ruTorrentClient.GetTorrents() });
         }, 1000);
     }
 

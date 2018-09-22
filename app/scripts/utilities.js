@@ -89,18 +89,72 @@ export async function makeRPCall(parameters) {
     return result;
 }
 
+
+
 export function toFormData(fd) {
     return jsonToFormData(fd);
 }
 export function toQueryString(qs) {
     return qs.stringify(qs);
 }
+Object.prototype.toFormData = function() {
+    return toFormData(this);
+}
+Object.prototype.toQueryString = function() {
+    return toQueryString(this);
+}
 export function ThrowNotification(error) {
     browser.notifications.create(error, {
-        type: 'basic',
-        title: 'ruTorrent Remote',
-        iconUrl: 'images/icon-128.png',
+        type: 'basic', title: 'ruTorrent Remote', iconUrl: 'images/icon-128.png',
         message: error
     });
     return false;
+}
+export function ThrowClassNotification(className, method, error = null) {
+    browser.notifications.create(error, {
+        type: 'basic', title: 'ruTorrent Remote', iconUrl: 'images/icon-128.png',
+        message: '[{0}]->{1}: {2}'.format(className, method, error)
+    });
+    return false;
+}
+
+/*
+
+    [
+        [
+            'd.directory',
+            [ '176ADC8991EB91504B0CDF4D52634415384C1E34' ]
+        ],
+        [
+            'd.directory',
+            [ '2D8F85F87897A24BA4D20DB093A01136345623E7' ]
+        ]
+    ]
+*/
+
+String.prototype.format = function () {
+    var a = this;
+    for (var k in arguments) {
+        a = a.replace(new RegExp("\\{" + k + "\\}", 'g'), arguments[k]);
+    }
+    return a;
+}
+function BuildRPC(content) {
+    let rpc = '<?xml version="1.0" encoding="UTF-8"?><methodCall><methodName>system.multicall</methodName><params><param><value><array><data>';
+    for (method of content) {
+        rpc += '<value><struct><member><name>methodName</name><value><string>{0}</string></value></member><member><name>params</name><value><array><data>'.format(method[0]);
+        if (method[1]) {
+            for (argument of method[1]) {
+                rpc += '<value><{0}>{1}</{0}></value>'.format(typeof((argument) == 'number' ? 'int' : 'string'), argument.toString())
+            }
+        }
+        rpc += `</data></array></value></member></struct></value>`;
+    }
+    rpc += '</data></array></value></param></params></methodCall>';
+    
+    return rpc;
+}
+
+function ParseRPC(rpc) {
+    let matches = /<string>(.*)<\/string>|<i\d>(.*)<\/i\d>/g.exec(rpc);
 }
