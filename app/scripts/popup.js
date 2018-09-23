@@ -2,10 +2,7 @@ import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
 import ReactTable from 'react-table'
 import ReactContextMenu from 'react-contextmenu'
-import axios from 'axios'
-import qs from 'qs'
-import {ruTorrentRemote, ruTorrentClient} from './clients/ruTorrentClient'
-import { ThrowClassNotification } from './utilities'
+import { ruTorrentClient } from './clients/ruTorrentClient'
 
 var utilities = require('./utilities')
 
@@ -18,20 +15,19 @@ class Popup extends Component {
             data: []
         };
 
+        this.listener = browser.runtime.onMessage.addListener((message) => {
+            if (message.state == 'torrents')
+                this.setState({ data: message.data });
+        });
+
         if (localStorage.getItem('url') == null || localStorage.getItem('username') == null || localStorage.getItem('password') == null) {
             this.state.noDataText = 'Please set the url, username and password in the Options Page';
             return;
         }
 
-        this.ruTorrentClient = new ruTorrentClient({
-            username: localStorage.getItem('username'),
-            password: localStorage.getItem('password'),
-            url: localStorage.getItem('url')
-        });
-
-        setInterval(async () => {
+        /*setInterval(async () => {
             this.setState({ data: await this.ruTorrentClient.GetTorrents() });
-        }, 1000);
+        }, 1000);*/
     }
 
     render() {
@@ -56,7 +52,7 @@ class Popup extends Component {
                     showPagination={false}
                     resizable={false}
                     style={{ height: 'auto' }}
-                    className={'-highlight'}
+                    className={'-highlight ReactTable-Dark'}
                     defaultSorted={[{ id: "added", desc: true }]}
                 />
             </div>

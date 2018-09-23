@@ -3,6 +3,7 @@
 <html>
   <head>
     <meta charset="utf-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval' *">
     <link rel="stylesheet" href="../styles/options.css"/>
     <link rel="stylesheet" type="text/css" href="chrome://global/skin/in-content/common.css">
     <link rel="stylesheet" type="text/css" href="resource://gre-resources/html.css">
@@ -15,6 +16,26 @@
           <label>URL</label>      <input class="url" type="text" id="url" placeholder="URL"> </br>
           <label>Username</label> <input class="userPass" type="text" id="username" placeholder="Username"> </br>
           <label>Password</label> <input class="userPass password" type="password" id="password" placeholder="Password"> </br>
+        </div>
+        <h3>Theme</h3>
+        <div class='headerContents'>
+          <label>Color Scheme</label>
+            <select class='theme' id='theme'>
+                <option>Light</option>
+                <option>Dark</option>
+            </select>
+        </div>
+
+        <h3>Save Paths</h3>
+        <div class='headerContents'>
+            <input class='savePathInput' type='text' id='savePathInput' placeholder='Custom save path'>
+            <button class='savePathButton' type="button" id='savePathButton'>Add</button>
+
+            <ul class="savePath" id='savePathList'>
+                <li class='savePathRow'><div class="savePathRowText">Default</div> <button class="savePathRowButton" type="button" disabled="disabled">X</button></li>
+                <!--<li class='savePathRow'><div class="savePathRowText">~/test</div> <button class="savePathRowButton" type="button" onclick="removeSavePath(this)">X</button></li>
+                <li class='savePathRow'><div class="savePathRowText">/home/edward/test</div> <button class="savePathRowButton" type="button" onclick="removeSavePath(this)">X</button></li>
+                --></ul>
         </div>
         <button type="submit" style='width: 75px; text-align: center;'>Save</button>
     </form>

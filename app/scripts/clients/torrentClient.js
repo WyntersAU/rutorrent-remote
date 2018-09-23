@@ -20,11 +20,6 @@ export class TorrentClient {
     async VerifyLogin() {
         if (!this.config.auth)
             return ThrowClassNotification(this.info.className, 'VerifyLogin', 'No login credentials provided');
-        let response = await axios.post(this.url + '/plugins/httprpc/action.php', null, this.config);
-
-        if (response.status == 200 && response.data == 'false')
-            return true;
-        return false;
     }
     async GetTorrents(parameters = null) {
         if (!this.info.canGetTorrents) 

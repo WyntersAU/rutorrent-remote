@@ -33,7 +33,10 @@ label {
 	padding: 0;
 }
 .savePathInput {
-	width: 227px;
+	width: auto;
+}
+.savePathButton {
+	text-align: center;
 }
 .savePathRow {
 	border-top: 1px solid #e1e4e8;
@@ -51,10 +54,18 @@ label {
 	min-width: 0px;
 	margin-left: auto;
 	border-radius: 3px;
+	text-align: center;
 }
 
 /* Work arounds */
 
+.theme {
+	text-align: center;
+	padding-top: 4px;
+	margin-left: 4px;
+	margin-top: 0px;
+	background-color: white;
+}
 .refreshRate {
 	width: 100px;
 }
